@@ -33,6 +33,11 @@ verifikasi bukti bayar, kwitansi PDF berpenomoran, pembukuan 12 bulan, portal pe
 | `npx supabase db push` | Terapkan migrasi |
 | `npx supabase test db` | pgTAP mesin tagihan |
 
+> **Catatan lokal:** Vite/Vitest (dan sebagian resolver Node) tidak bisa memuat modul dari
+> folder yang mengandung `#` di jalurnya (contoh: `Downloads\#SatuArahDraft\...`).
+> Jika `npm test` gagal dengan `Cannot find module '/@vite/env'`, pindahkan/clone repo ke
+> folder tanpa `#` atau map drive: `subst K: "C:\...\management-kost-app"` lalu jalankan dari `K:\`.
+
 ## Arsitektur singkat
 
 ```
