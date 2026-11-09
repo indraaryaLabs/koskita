@@ -1,0 +1,40 @@
+{
+  "name": "koskita",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KosKita — manajemen kos kecil: tagihan, pengingat, bukti bayar, kwitansi, pembukuan.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:migrate": "supabase db push",
+    "db:test": "supabase migration up --local"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.3.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.0",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.475.0",
+    "next": "^15.5.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^3.2.1",
+    "sonner": "^1.7.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.14",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "eslint": "^9.22.0",
+    "eslint-config-next": "^15.5.6",
+    "tailwindcss": "^4.0.14",
+    "typescript": "^5.8.2",
+    "vitest": "^3.1.1"
+  }
+}
