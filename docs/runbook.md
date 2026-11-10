@@ -14,18 +14,19 @@ Untuk pemilik/teknisi yang mengoperasikan aplikasi setelah deploy.
 
 ## 2. Penjadwal tagihan
 
-Utama: **pg_cron** di Supabase (didaftarkan migrasi 0003, jalan 04:10 & 05:30 UTC).
+Project Supabase ini tidak memiliki `pg_cron` aktif. Karena itu, Vercel Schedules menjalankan
+`GET /api/cron/run` setiap hari pukul 05:30 UTC (13:30 WITA) berdasarkan `vercel.json`.
+Vercel mengirim `Authorization: Bearer <CRON_SECRET>`; endpoint menolak permintaan tanpa rahasia
+tersebut, lalu memanggil `generate_invoices` dan `apply_late_fees`.
 
-Cadangan bila project Supabase tidak memiliki pg_cron aktif:
-GitHub Actions harian → POST `https://<domain>/api/cron/run` dengan header
-`Authorization: Bearer <CRON_SECRET>` → memanggil `generate_invoices` lalu `apply_late_fees`.
+Jika kemudian mengaktifkan `pg_cron`, hapus jadwal Vercel agar proses tagihan tidak dipanggil dua kali.
+Untuk pemanggilan manual, gunakan `POST https://<domain>/api/cron/run` dengan header yang sama.
 
-Cek manual:
+Cek manual bila `pg_cron` diaktifkan:
 ```sql
-select * from cron.job;             -- jadwal terdaftar
-select cron.job_run_details order by start_time desc limit 5;
+select * from cron.job;
+select * from cron.job_run_details order by start_time desc limit 5;
 ```
-
 ## 3. Super-admin langganan
 
 Setelah user pertama masuk (dapat `user_id` di `auth.users`):

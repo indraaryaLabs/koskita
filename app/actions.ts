@@ -65,13 +65,14 @@ export async function onboardingAction(formData: FormData) {
     .single();
   if (orgErr || !org) return fail("Gagal membuat organisasi: " + orgErr?.message);
 
-  await client
+  const { error: memberErr } = await client
     .from("org_members")
     .insert({ org_id: org.id, user_id: user.id, role: "owner" });
+  if (memberErr) return fail("Gagal menautkan akun sebagai pemilik: " + memberErr.message);
 
-  const code = (parsed.data.kosName.replace(/[^A-Za-z]/g, "TISKIT").toUpperCase().slice(0, 2) || "KS")
-    .slice(0, 3)
-    .padEnd(3, "X") + (Math.floor(Math.random() * 8) + 1);
+  const codePrefix = (parsed.data.kosName.replace(/[^A-Za-z]/g, "").toUpperCase().slice(0, 3) || "KOS")
+    .padEnd(3, "X");
+  const code = codePrefix + String.fromCharCode(65 + Math.floor(Math.random() * 26));
 
   const { data: prop, error: propErr } = await client
     .from("properties")
@@ -104,7 +105,8 @@ export async function onboardingAction(formData: FormData) {
       price_idr: price,
       facilities: [] as string[],
     }));
-    await client.from("rooms").insert(rows);
+    const { error: roomErr } = await client.from("rooms").insert(rows);
+    if (roomErr) return fail("Gagal membuat kamar: " + roomErr.message);
   }
 
   redirect("/?selesai=1");
