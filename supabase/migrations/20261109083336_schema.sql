@@ -2,6 +2,7 @@
 -- Uang = bigint rupiah. Tanggal = date (UTC/Asia per properti). Tidak ada float.
 
 create extension if not exists "pgcrypto";
+create extension if not exists btree_gist;
 
 -- ============ Organisasi & akses ============
 create table if not exists organizations (
@@ -96,10 +97,13 @@ create table if not exists leases (
   electricity_rate_idr bigint not null default 0 check (electricity_rate_idr >= 0),
   status text not null default 'active' check (status in ('active', 'ended')),
   created_at timestamptz not null default now(),
-  exclusion using gist (
+  exclude using gist (
     room_id with =,
-    daterange(start_date, coalesce(end_date, 'infinity'::date)) with &&
-  ) where (status = 'active')
+    (case when status = 'active'
+          then daterange(start_date, 'infinity'::date)
+          else 'empty'::daterange
+     end) with &&
+  )
 );
 
 create table if not exists lease_charges (
@@ -194,7 +198,7 @@ create table if not exists tickets (
   status text not null default 'baru' check (status in ('baru', 'diproses', 'selesai')),
   notes text not null default '',
   cost_idr bigint not null default 0 check (cost_idr >= 0),
-  billed_to_invoice_id uuid references invoices (id) on set null,
+  billed_to_invoice_id uuid references invoices (id) on delete set null,
   created_at timestamptz not null default now()
 );
 

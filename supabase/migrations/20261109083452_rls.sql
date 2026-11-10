@@ -70,7 +70,7 @@ create policy prop_select on properties for select
 create policy prop_insert on properties for insert
   with check (has_role(org_id, '{owner}'));
 create policy prop_update on properties for update
-  using (has_role(org_id, '{owner}', '{caretaker}'::text[])); -- penjaga boleh baca+sunting sementara
+  using (has_role(org_id, '{owner,caretaker}'::text[])); -- penjaga boleh baca+sunting sementara
 create policy prop_delete on properties for delete
   using (has_role(org_id, '{owner}'));
 
@@ -93,7 +93,7 @@ create policy room_insert on rooms for insert
 create policy room_update on rooms for update
   using (exists (
     select 1 from properties p where p.id = property_id
-      and has_role(p.org_id, '{owner}', 'caretaker')));
+      and has_role(p.org_id, '{owner,caretaker}'::text[])));
 create policy room_delete on rooms for delete
   using (exists (
     select 1 from properties p where p.id = property_id and has_role(p.org_id, '{owner}')));
@@ -143,7 +143,7 @@ create policy inv_insert on invoices for insert
 create policy inv_update on invoices for update
   using (exists (
     select 1 from properties p where p.id = property_id
-      and has_role(p.org_id, '{owner}', 'caretaker')));
+      and has_role(p.org_id, '{owner,caretaker}'::text[])));
 create policy inv_delete on invoices for delete
   using (is_platform_admin()); -- tetap ada penomoran unik, tidak ada penghapusan pemilik
 
@@ -160,7 +160,7 @@ create policy pay_select on payments for select
 create policy pay_insert on payments for insert
   with check (exists (
     select 1 from invoices i join properties p on p.id = i.property_id
-    where i.id = invoice_id and has_role(p.org_id, '{owner}', 'caretaker')));
+    where i.id = invoice_id and has_role(p.org_id, '{owner,caretaker}'::text[])));
 create policy pay_update on payments for update
   using (exists (
     select 1 from invoices i join properties p on p.id = i.property_id
@@ -196,11 +196,11 @@ create policy tik_select on tickets for select
 create policy tik_insert on tickets for insert
   with check (exists (
     select 1 from properties p where p.id = property_id
-      and has_role(p.org_id, '{owner}', 'caretaker')));
+      and has_role(p.org_id, '{owner,caretaker}'::text[])));
 create policy tik_update on tickets for update
   using (exists (
     select 1 from properties p where p.id = property_id
-      and has_role(p.org_id, '{owner}', 'caretaker')));
+      and has_role(p.org_id, '{owner,caretaker}'::text[])));
 
 -- ===== checkouts =====
 create policy co_select on checkouts for select

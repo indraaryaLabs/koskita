@@ -33,6 +33,7 @@ $$;
   - 'partially_paid' / 'paid' diatur oleh trigger pembayaran, dan TIDAK ditimpa di sini
 */
 create or replace function kos_refresh_invoice(p_invoice uuid)
+returns void
 language plpgsql as $$
 declare
   v_total bigint;
@@ -479,10 +480,29 @@ end;
 $$;
 
 -- Mesin tagihan hanya untuk service/cron/admin database. Portal mengakses fungsi tertutup.
-revoke all on function generate_invoices(date) from public;
-revoke all on function apply_late_fees(date) from public;
-revoke all on function portal_insert_payment(text, uuid, bigint, text, date, text) from anon;
-grant execute on function portal_insert_payment(text, uuid, bigint, text, date, text) to service_role;
+-- Restrict SECURITY DEFINER routines to the roles that need them.
+revoke all on function public.apply_late_fees(date) from public, anon, authenticated, service_role;
+revoke all on function public.generate_invoices(date) from public, anon, authenticated, service_role;
+revoke all on function public.has_role(uuid, text[]) from public, anon, authenticated, service_role;
+revoke all on function public.is_platform_admin() from public, anon, authenticated, service_role;
+revoke all on function public.kos_apply_payment() from public, anon, authenticated, service_role;
+revoke all on function public.kos_audit() from public, anon, authenticated, service_role;
+revoke all on function public.member_org_ids() from public, anon, authenticated, service_role;
+revoke all on function public.member_role(uuid) from public, anon, authenticated, service_role;
+revoke all on function public.portal_get(text) from public, anon, authenticated, service_role;
+revoke all on function public.portal_insert_payment(text, uuid, bigint, text, date, text) from public, anon, authenticated, service_role;
+revoke all on function public.portal_insert_ticket(text, text, text, text) from public, anon, authenticated, service_role;
+
+grant execute on function public.has_role(uuid, text[]) to authenticated;
+grant execute on function public.is_platform_admin() to authenticated;
+grant execute on function public.member_org_ids() to authenticated;
+grant execute on function public.member_role(uuid) to authenticated;
+
+grant execute on function public.apply_late_fees(date) to service_role;
+grant execute on function public.generate_invoices(date) to service_role;
+grant execute on function public.portal_get(text) to service_role;
+grant execute on function public.portal_insert_payment(text, uuid, bigint, text, date, text) to service_role;
+grant execute on function public.portal_insert_ticket(text, text, text, text) to service_role;
 
 -- ============ pg_cron — harian, aman dijalankan berulang ============
 do $$
