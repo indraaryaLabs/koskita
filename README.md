@@ -10,15 +10,15 @@ verifikasi bukti bayar, kwitansi PDF berpenomoran, pembukuan 12 bulan, portal pe
 ## Setup — 10 langkah (≤ 15 menit)
 
 1. **Buat project Supabase** di [supabase.com](https://supabase.com) (region Singapore terdekat).
-2. **Salin kredensial**: Dashboard Supabase → Settings → API — catat Project URL, anon key, dan service_role key.
-3. **Pasan env**: salin `.env.example` → `.env.local`, isi keempat nilai (lihat `docs/runbook.md`).
+2. **Salin kredensial**: Dashboard Supabase -> Settings -> API — catat Project URL, anon key, dan service_role key.
+3. **Pasan env**: salin `.env.example` -> `.env.local`, isi keempat nilai (lihat `docs/runbook.md`).
 4. **Pasang migrasi**: `npx supabase link --project-ref <REF>` lalu `npx supabase db push` — menerapkan
-   `supabase/migrations/0001…0003` (tabel, RLS, bucket privat, mesin tagihan, pg_cron).
+ `supabase/migrations/0001…0003` (tabel, RLS, bucket privat, mesin tagihan, pg_cron).
 5. **Jalankan tes database** (opsional tapi dianjurkan): `npx supabase test db` — 25 asersi pgTAP.
-6. **Jalankan aplikasi**: `npm install` lalu `npm run dev` → buka http://localhost:3000.
+6. **Jalankan aplikasi**: `npm install` lalu `npm run dev` -> buka http://localhost:3000.
 7. **Masuk**: kirim tautan magic ke email Anda (atau Google). Onboarding: nama kos + `101-110`.
 8. **Super-admin langganan** (sekali): SQL `insert into platform_admins (user_id) values ('<uuid-user-Anda>');`
-9. **Deploy ke Vercel**: push repo ke GitHub → import di vercel.com → isi 4 env vars (termasuk `CRON_SECRET`) → Deploy.
+9. **Deploy ke Vercel**: push repo ke GitHub -> import di vercel.com -> isi 4 env vars (termasuk `CRON_SECRET`) -> Deploy.
 10. **Verifikasi**: buka situs production, lakukan siklus nyata di `docs/field-test.md` dengan 2 pemilik uji.
 
 ## Perintah
@@ -41,12 +41,12 @@ verifikasi bukti bayar, kwitansi PDF berpenomoran, pembukuan 12 bulan, portal pe
 ## Arsitektur singkat
 
 ```
-Next.js 15 (App Router)  ── Vercel (hosting, ADR 0002)
-  ├─ Server Components + Server Actions (app/)
-  ├─ RLS-first: setiap query lewat klien user; service_role hanya route khusus
-  └─ Portal penghuni: token URL, tanpa akun → RPC security definer
+Next.js 15 (App Router) ── Vercel (hosting, ADR 0002)
+ ├─ Server Components + Server Actions (app/)
+ ├─ RLS-first: setiap query lewat klien user; service_role hanya route khusus
+ └─ Portal penghuni: token URL, tanpa akun -> RPC security definer
 Supabase ── Postgres + RLS + pg_cron (generate_invoices/apply_late_fees)
-         └─ Storage privat (KTP, bukti, kwitansi) — akses signed URL ≤ 10 menit
+ └─ Storage privat (KTP, bukti, kwitansi) — akses signed URL ≤ 10 menit
 ```
 
 ## Struktur folder penting
